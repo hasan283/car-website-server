@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-require('dotenv').config();
 const port = process.env.PORT || 5000;
 const app = express();
 
@@ -28,6 +28,7 @@ async function run() {
             res.send(result);
         });
 
+
         // GET 
         app.get('/stock/:id', async (req, res) => {
             const id = req.params.id;
@@ -35,6 +36,14 @@ async function run() {
             const result = await stockCollection.findOne(query);
             res.send(result);
         });
+
+        // Inventory Count 
+        app.get('/stockCount', async (req, res) => {
+            const query = {};
+            const cursor = stockCollection.find(query);
+            const count = await cursor.count();
+            res.send({ count });
+        })
 
         // POST 
         app.post('/stock', async (req, res) => {
@@ -49,7 +58,9 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const result = await stockCollection.deleteOne(query);
             res.send(result);
-        })
+        });
+
+
 
 
     }
