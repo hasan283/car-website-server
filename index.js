@@ -21,13 +21,29 @@ async function run() {
     try {
         await client.connect();
         const stockCollection = client.db('inventoryCar').collection('stock');
+        const orderCollection = client.db('inventoryCar').collection('order')
         app.get('/stock', async (req, res) => {
+            console.log('query', req.query)
+            const page = parseInt(req.query.page);
+            const size = parseInt(req.query.size);
             const query = {};
             const cursor = stockCollection.find(query);
-            const result = await cursor.toArray();
-            res.send(result);
+            let stocks;
+            if (page || size) {
+                stocks = await cursor.skip(page * size).limit(size).toArray();
+            } else {
+                stocks = await cursor.toArray();
+            }
+
+            res.send(stocks);
         });
 
+
+        // Inventory Count 
+        app.get('/stockCount', async (req, res) => {
+            const count = await stockCollection.estimatedDocumentCount();
+            res.send({ count });
+        })
 
         // GET 
         app.get('/stock/:id', async (req, res) => {
@@ -37,13 +53,7 @@ async function run() {
             res.send(result);
         });
 
-        // Inventory Count 
-        app.get('/stockCount', async (req, res) => {
-            const query = {};
-            const cursor = stockCollection.find(query);
-            const count = await cursor.count();
-            res.send({ count });
-        })
+
 
         // POST 
         app.post('/stock', async (req, res) => {
@@ -60,7 +70,20 @@ async function run() {
             res.send(result);
         });
 
+        // Order Collection Api 
+        app.get('/order', async (req, res) => {
+            const query = {};
+            const cursor = orderCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
+
+        app.post('/order', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollection.insertOne(order);
+            res.send(result);
+        })
 
 
     }
