@@ -136,6 +136,10 @@ app.get('/', (req, res) => {
     res.send('Running Inventory Car Management Website!!');
 });
 
+app.get('/heroku', (req, res) => {
+    res.send('Heroku')
+})
+
 app.listen(port, () => {
     console.log('Inventory Car Management Website Server Add Success!!', port)
 })
