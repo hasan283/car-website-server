@@ -72,7 +72,8 @@ async function run() {
 
         // Order Collection Api 
         app.get('/order', async (req, res) => {
-            const query = {};
+            const email = req.query.email;
+            const query = { email: email };
             const cursor = orderCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
