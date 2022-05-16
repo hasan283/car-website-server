@@ -103,8 +103,8 @@ async function run() {
 
         // Order Collection Api 
         app.get('/order', verifyJWT, async (req, res) => {
-            const decodedEmail = req.decoded.email
             const email = req.query.email;
+            const decodedEmail = req.decoded.email;
             if (email === decodedEmail) {
                 const query = { email: email };
                 const cursor = orderCollection.find(query);
